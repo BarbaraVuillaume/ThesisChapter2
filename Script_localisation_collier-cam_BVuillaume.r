@@ -1,18 +1,18 @@
 # LIER LES VIDEOS DES COLLIERS AUX LOCALISATIONS GPS
 
 
-# fichier date et heure associé à chaque video du collier
+# fichier date et heure associ? ? chaque video du collier
 DH <- read.table("C:/Users/vuill/Documents/Ulaval2019-A/Chap2/Colliers_Cameras/2016/21226_2016_Yann-AFINIR/Collier1.21226.txt", sep="\t", header=TRUE)
 
 # fichier contenant les locations des points GPS
 # 2 temps UTC et LMT (Local Mean Time) : utiliser LMT
-Loc <- read.table("F:/Barbara/Collier camera 2016/colliers caméra - 2016/prets/GPS_Collar21226_1.txt", sep="\t", header=TRUE)
+Loc <- read.table("F:/Barbara/Collier camera 2016/colliers cam?ra - 2016/prets/GPS_Collar21226_1.txt", sep="\t", header=TRUE)
 
-# Dans excel (plus rapide) on crée une colonne jour julien
+# Dans excel (plus rapide) on cr?e une colonne jour julien
 # on convertit les colonnes dates et temps en 3 colonnes chaque (Jr,Mo,An et H,Mi,Se)
 # Julian = DATE(year,month,day) + TIME(hour,min,sec)
 
-# peut aussi s'écrire dans R si on veut
+# peut aussi s'?crire dans R si on veut
 
 Loc$DaTim <- paste(Loc$LMT_Date,Loc$LMT_Time,sep=" ")
 Loc$JJLMT <- NA
@@ -21,18 +21,18 @@ Loc$JJLMT <- NA
 for (i in 1:nrow(Loc))
 {
   k=as.POSIXct(Loc[i,16], format = "%d/%m/%Y %H:%M:%S") - as.POSIXct("01/01/1900 00:00:00", format = "%d/%m/%Y %H:%M:%S")
-  Loc[i,17] = as.numeric(unclass(k)[1])   # permet d'aller chercher juste la valeur car sortie par défaut en phrase
+  Loc[i,17] = as.numeric(unclass(k)[1])   # permet d'aller chercher juste la valeur car sortie par d?faut en phrase
 }
 
 # rechargement du fichier avec la nouvelle colonne si fait dans excel
-#Loc <- read.table("F:/Barbara/Collier camera 2016/colliers caméra - 2016/prets/GPS_Collar21226_1b.txt", sep="\t", header=TRUE)
+#Loc <- read.table("F:/Barbara/Collier camera 2016/colliers cam?ra - 2016/prets/GPS_Collar21226_1b.txt", sep="\t", header=TRUE)
 
-# comme les videos ne sont que du 1 juin au 1er septembre on extrait la partie du jeu de données qui nous intéresse
+# comme les videos ne sont que du 1 juin au 1er septembre on extrait la partie du jeu de donn?es qui nous int?resse
 Loc$Mois <- as.numeric(substr(Loc$LMT_Date,4,5))
 Loc2 <- Loc[Loc$Mois>5,]
 
 
-# on crée aussi une colonne Julian day dans le fichier DH
+# on cr?e aussi une colonne Julian day dans le fichier DH
 
 DH$JJLMT <- NA
 
@@ -41,28 +41,28 @@ for (i in 1:nrow(DH))
 {
   dh <- paste(DH[i,4],"/",DH[i,5],"/",DH[i,6]," ",DH[i,7],":",DH[i,8],":00",sep="")     # jour mois an heure min
   k=as.POSIXct(dh, format = "%d/%m/%Y %H:%M:%S") - as.POSIXct("01/01/1900 00:00:00", format = "%d/%m/%Y %H:%M:%S")
-  DH$JJLMT[i] = as.numeric(unclass(k)[1])   # permet d'aller chercher juste la valeur car sortie par défaut en phrase
+  DH$JJLMT[i] = as.numeric(unclass(k)[1])   # permet d'aller chercher juste la valeur car sortie par d?faut en phrase
 }
 
 
-# on crée 3 nouvelles colonnes : Locdate, Lon, Lat 
-# Locdate permettra de savoir la date de la localisation qui lui est associée car il y aura des légères différences
+# on cr?e 3 nouvelles colonnes : Locdate, Lon, Lat 
+# Locdate permettra de savoir la date de la localisation qui lui est associ?e car il y aura des l?g?res diff?rences
 
 DH$Locdate <- NA
 DH$Lon <- NA
 DH$Lat <- NA
 
-# les localisations ne tombent pas toujours à heures fixes.
-# j'ai arbitrairement choisi de procéder ainsi :
-# Supposons que les 3 vidéos ont été prises le 6 juin 2016 à 8h, 8h20 et 8h40
-# Pour être associé à la 1e video, le point GPS devra tomber le 6 juin entre 7h50 et 8h10
-# Pour être associé à la 2e video, le point GPS devra tomber le 6 juin entre 8h10 et 8h30
-# Pour être associé à la 3e video, le point GPS devra tomber le 6 juin entre 8h30 et 8h50
+# les localisations ne tombent pas toujours ? heures fixes.
+# j'ai arbitrairement choisi de proc?der ainsi :
+# Supposons que les 3 vid?os ont ?t? prises le 6 juin 2016 ? 8h, 8h20 et 8h40
+# Pour ?tre associ? ? la 1e video, le point GPS devra tomber le 6 juin entre 7h50 et 8h10
+# Pour ?tre associ? ? la 2e video, le point GPS devra tomber le 6 juin entre 8h10 et 8h30
+# Pour ?tre associ? ? la 3e video, le point GPS devra tomber le 6 juin entre 8h30 et 8h50
 
 for (i in 1:nrow(DH))
 {
   print (paste(i," / ",nrow(DH)))
-  absDH <- trunc(DH[i,9])
+  absDH <- trunc(DH[i,9])     # colonne 9 pour le jour julien
   Loc3 <- Loc2[trunc(Loc2$JJLMT)==absDH,]
   
   if (DH$Minute[i]==0){
@@ -93,18 +93,18 @@ for (i in 1:nrow(DH))
 
 }
 
-# on sauve le fichier créé
+# on sauve le fichier cr??
 write.table(DH,"F:/Barbara/Ulaval2018-A/Colliers_Cameras/2016/21226_2016_Yann-AFINIR/LocVid_21226_2016.txt", sep="\t", row.names=F, col.names=T, quote=F)
 
 DH <- read.table("F:/Barbara/Ulaval2018-A/Colliers_Cameras/2016/21226_2016_Yann-AFINIR/LocVid_21226_2016.txt", sep="\t", header=T)
 
-# que faire maintenant pour les vidéos sans coordonnées
+# que faire maintenant pour les vid?os sans coordonn?es
 # a moins que la location existe sur pour les videos a 20 et 40 min
-# on cherche à établir la localisation.
+# on cherche ? ?tablir la localisation.
 # quand elle n'existe pas on prend la localisation aux heures pleines H et H+1
-# et on calcule une localisation hypothétique en supposant 
-# que le déplacement est rectiligne pendant l'heure et donc que les localisations aux 20 et 40 min se trouvent donc 
-# à 1/3 et 2/3 respectivement entre les deux points
+# et on calcule une localisation hypoth?tique en supposant 
+# que le d?placement est rectiligne pendant l'heure et donc que les localisations aux 20 et 40 min se trouvent donc 
+# ? 1/3 et 2/3 respectivement entre les deux points
 
 # pour cela ON CONVERTIT Lon et Lat EN CM !!!!
 
@@ -120,18 +120,18 @@ for (i in 1:nrow(DH))
 {
   if (is.na(DH$Lon[i])==F)
   {
-    #projeter les données en lambert conique
+    #projeter les donn?es en lambert conique
     options(digits=12)
     SP<-SpatialPoints(cbind(DH$Lon[i],DH$Lat[i]),proj4string=CRS("+proj=longlat"))
-    SPt<-spTransform(SP,CRS("+init=epsg:32198")) #### projection en Québec Lambert
+    SPt<-spTransform(SP,CRS("+init=epsg:32198")) #### projection en Qu?bec Lambert
     SPt<-as.data.frame(SPt)
     colnames(SPt)<-c("X","Y")
     SPtc[i,] <- SPt[1,]
   }
 }
 colnames(SPtc)<-c("X","Y")
-DH<-cbind(DH,SPtc) # on ajoute à tab, 2 colonnes x et y contenant les DHalisation en Lambert
-#write.table(DH,"F:/Barbara/Ulaval2018-A/Colliers_Cameras/2016/21226_2016_Yann-AFINIR/LocVid_21226_2016int.txt",sep="\t",col.names=T,row.names=F,quote=F) # on exporte le fichier avec les DHalisations transformées
+DH<-cbind(DH,SPtc) # on ajoute ? tab, 2 colonnes x et y contenant les DHalisation en Lambert
+#write.table(DH,"F:/Barbara/Ulaval2018-A/Colliers_Cameras/2016/21226_2016_Yann-AFINIR/LocVid_21226_2016int.txt",sep="\t",col.names=T,row.names=F,quote=F) # on exporte le fichier avec les DHalisations transform?es
 
 
 
@@ -142,7 +142,7 @@ for (i in 1:nrow(DH)) {
 
       key <- which(is.na(DH$X)==F)
       M <- max(which(key < i))    # numero de ligne de la derniere ligne avec localisation avant i
-      m <- min(which(key > i))    # numero de ligne de la 1e ligne avec localisation après i
+      m <- min(which(key > i))    # numero de ligne de la 1e ligne avec localisation apr?s i
 
       DH$X[i] <- DH[key[M],13] + (i - key[M]) * ((DH[key[m],13] - DH[key[M],13])/ (key[m] - key[M]))
       DH$Y[i] <- DH[key[M],14] + (i - key[M]) * ((DH[key[m],14] - DH[key[M],14])/ (key[m] - key[M]))
